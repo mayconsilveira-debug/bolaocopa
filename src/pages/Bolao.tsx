@@ -75,7 +75,7 @@ export default function Bolao({ data }: { data: WcData }) {
                 <span className="c-name">{p.name}</span>
                 <span className="c-champ"><i className={`dot ${s.champ.status}`} /> {p.champion}</span>
                 <span className="c-scorer">{p.scorer} <b>{s.goals}g</b></span>
-                <span className="c-player">{p.player} <b>{ga.ga}</b></span>
+                <span className="c-player">{p.player} <b>G: {ga.goals} A: {ga.assists}</b></span>
                 <span className="c-pts">{s.total}</span>
                 <span className="c-caret">{isOpen ? '▾' : '▸'}</span>
               </button>
