@@ -17,7 +17,7 @@ export default function App() {
 
   return (
     <>
-    <Intro />
+    {!menuOpen && <Intro />}
     <div className={`layout${menuOpen ? '' : ' collapsed'}`}>
       {menuOpen && <Sidebar page={page} onNav={nav} onClose={() => setMenuOpen(false)} />}
       <main className="main">
@@ -41,6 +41,10 @@ export default function App() {
           {page === 'regras' && <Regras />}
           {page === 'bolao' && <Bolao data={data} />}
           {page === 'grupos' && <Grupos data={data} />}
+
+          <footer className="credits">
+            Desenvolvido por Gustavo D'avila, Adriano Martinez e Mámá
+          </footer>
         </div>
       </main>
     </div>

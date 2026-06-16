@@ -36,46 +36,65 @@ h1, h2, h3, h4 { text-transform: uppercase; letter-spacing: var(--track); }
 button { font-family: var(--font-lambotype); cursor: pointer; }
 
 /* ============================================================
-   ABERTURA — a bola atravessa rolando; depois entram os
-   títulos verticais "COPA DO MUNDO" nas laterais.
+   FAIXAS LATERAIS "COPA DO MUNDO" — overlay fixo, independente do menu.
+   A bola desce pela faixa e o texto é revelado atrás dela (depois).
    ============================================================ */
-.ball-fly { position: fixed; inset: 0; z-index: 999; pointer-events: none; overflow: hidden; }
-.bf-ball {
-  position: absolute; top: 46%; left: 0;
-  width: 120px; height: 120px; border-radius: 50%; overflow: hidden;
-  box-shadow: 0 0 40px rgba(255,192,0,0.4), inset 0 -8px 20px rgba(0,0,0,0.3);
-  animation: rollAcross 2s cubic-bezier(0.45, 0, 0.55, 1) forwards;
+.wc-band {
+  position: fixed; top: 0; bottom: 0; width: 72px; z-index: 5;
+  pointer-events: none; overflow: hidden;
+}
+.wc-band.left { left: 0; }
+.wc-band.right { right: 0; }
+
+/* texto vertical, revelado de cima pra baixo (clip), conforme a bola passa */
+.wc-text {
+  position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+  writing-mode: vertical-rl; text-orientation: mixed; white-space: nowrap;
+  font-family: var(--font-lambotype); font-weight: 700; text-transform: uppercase;
+  font-size: clamp(28px, 2.8vw, 48px); letter-spacing: 0.16em; line-height: 1;
+  clip-path: inset(0 0 100% 0);
+  animation: wcReveal 4s cubic-bezier(0.55, 0, 0.7, 1) infinite;
+}
+.wc-band.left .wc-text { color: var(--color-carbony-black); }
+.wc-band.right .wc-text { color: var(--color-giallo-vivo); }
+
+/* a bola desce pela faixa, à frente da revelação */
+.wc-ball {
+  position: absolute; left: 50%; top: 0; margin-left: -22px;
+  width: 44px; height: 44px; border-radius: 50%; overflow: hidden;
+  box-shadow: 0 0 18px rgba(255,192,0,0.55), inset 0 -4px 12px rgba(0,0,0,0.3);
+  transform: translateY(-90px);
+  animation: wcDrop 4s cubic-bezier(0.55, 0, 0.7, 1) infinite;
   will-change: transform;
 }
-.bf-ball img { width: 124%; height: 124%; margin: -12%; object-fit: cover; display: block; }
+.wc-ball img { width: 124%; height: 124%; margin: -12%; object-fit: cover; display: block; }
 
-@keyframes rollAcross {
-  0%   { transform: translateX(-160px) translateY(0) rotate(0deg); }
-  50%  { transform: translateX(45vw) translateY(-30px) rotate(900deg); }
-  100% { transform: translateX(calc(100vw + 160px)) translateY(0) rotate(1980deg); }
+/* a bola desce nos primeiros ~40% (1,6s) e segura fora da tela até reiniciar (4s) */
+@keyframes wcDrop {
+  0%   { transform: translateY(-90px) rotate(0deg); }
+  40%  { transform: translateY(calc(100vh + 90px)) rotate(900deg); }
+  100% { transform: translateY(calc(100vh + 90px)) rotate(900deg); }
+}
+/* o texto é revelado junto e fica visível até o ciclo reiniciar */
+@keyframes wcReveal {
+  0%   { clip-path: inset(0 0 100% 0); }
+  40%  { clip-path: inset(0 0 0 0); }
+  100% { clip-path: inset(0 0 0 0); }
 }
 
-/* títulos verticais nas margens */
-.side-label {
-  position: fixed; top: 50%; z-index: 5; pointer-events: none;
-  writing-mode: vertical-rl; text-orientation: mixed;
-  font-family: var(--font-lambotype); font-weight: 700; text-transform: uppercase;
-  font-size: clamp(18px, 1.9vw, 34px); letter-spacing: 0.16em; line-height: 1;
-  white-space: nowrap; opacity: 0;
-  animation: labelIn 1s ease 1.6s forwards;
-}
-.side-label.left { left: 6px; transform: translateY(-50%) rotate(180deg); color: var(--color-carbony-black); }
-.side-label.right { right: 6px; transform: translateY(-50%); color: var(--color-giallo-vivo); }
-
-@keyframes labelIn {
-  from { opacity: 0; letter-spacing: 0.5em; }
-  to   { opacity: 0.9; letter-spacing: 0.18em; }
-}
-
-/* esconde só em telas estreitas (onde não há margem livre) */
-@media (max-width: 1280px) { .side-label { display: none; } }
+/* esconde em telas estreitas (sem margem livre ao lado do conteúdo) */
+@media (max-width: 1280px) { .wc-band { display: none; } }
 @media (prefers-reduced-motion: reduce) {
-  .bf-ball, .side-label { animation-duration: 0.01ms !important; }
+  .wc-ball { display: none; }
+  .wc-text { clip-path: none; animation: none; }
+}
+
+/* ---------- CRÉDITOS (rodapé) ---------- */
+.credits {
+  padding: 28px 40px; text-align: center;
+  font-size: 12px; letter-spacing: 0.16em; text-transform: uppercase;
+  color: var(--color-giallo-vivo); border-top: 1px solid var(--color-anvil);
+  background: var(--color-pure-black);
 }
 
 /* ---------- LAYOUT ---------- */
@@ -88,6 +107,7 @@ button { font-family: var(--font-lambotype); cursor: pointer; }
   width: var(--sb-w); flex-shrink: 0; background: var(--color-pure-black);
   border-right: 4px solid var(--color-giallo-vivo);
   display: flex; flex-direction: column; position: sticky; top: 0; height: 100vh;
+  z-index: 20; /* acima das faixas laterais — o menu cobre a faixa esquerda */
 }
 .sb-brand { padding: 24px; display: flex; align-items: center; gap: 14px; background: var(--color-giallo-vivo); border-bottom: 2px solid var(--color-pure-black); }
 .sb-toggle { margin-left: auto; background: none; border: none; color: var(--color-pure-black); font-size: 18px; line-height: 1; padding: 4px; transition: opacity .15s; }
