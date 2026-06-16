@@ -1,6 +1,6 @@
 import { defineConfig, loadEnv, type Plugin } from 'vite'
 import react from '@vitejs/plugin-react'
-import { fetchData } from './api/_wc'
+import { fetchData } from './api/wc'
 
 // Plugin que replica /api/matches durante `npm run dev`
 // (o Vite não roda funções serverless; em produção a Vercel usa api/matches.ts).
