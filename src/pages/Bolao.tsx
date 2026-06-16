@@ -132,7 +132,8 @@ function GroupsDetail(p: typeof bolao.participants[number], data: WcData) {
     const st = by[pick.g]
     const r1 = st?.table[0]?.abbr
     const r2 = st?.table[1]?.abbr
-    const has = !!(st && st.table.length >= 2)
+    const started = st ? st.table.reduce((a, r) => a + r.played, 0) > 0 : false
+    const has = !!(st && st.table.length >= 2 && started)
     let pa = 0; let pb = 0
     if (has) {
       if (pick.a === r1) pa = 2; else if (pick.a === r2) pa = 1

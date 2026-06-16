@@ -15,16 +15,19 @@ export function groupBreakdown(p: Participant, standings: GroupStanding[]) {
   let pts = 0
   const detail = p.groupPicks.map((pick) => {
     const st = by[pick.g]
+    // só conta se o grupo já começou (≥1 jogo) — evita pontuar por ordem alfabética
+    const started = st ? st.table.reduce((a, r) => a + r.played, 0) > 0 : false
+    const has = !!(st && st.table.length >= 2 && started)
     const r1 = st?.table[0]?.abbr
     const r2 = st?.table[1]?.abbr
     let pa = 0
     let pb = 0
-    if (st && st.table.length >= 2) {
+    if (has) {
       if (pick.a === r1) pa = 2; else if (pick.a === r2) pa = 1
       if (pick.b === r2) pb = 2; else if (pick.b === r1) pb = 1
     }
     pts += pa + pb
-    return { group: pick.g, a: pick.a, b: pick.b, pa, pb, hasData: !!(st && st.table.length >= 2) }
+    return { group: pick.g, a: pick.a, b: pick.b, pa, pb, hasData: has }
   })
   return { points: pts, detail }
 }
